@@ -2,6 +2,8 @@ pub fn do_nothing() -> bool {
     return false;
 }
 
+// pub fn
+
 #[cfg(test)]
 mod tests {
     use super::*;
