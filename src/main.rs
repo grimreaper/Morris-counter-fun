@@ -1,7 +1,6 @@
 extern crate core;
 
 use std::{fs, io};
-use std::io::Stdin;
 use std::process::exit;
 use clap::{command, Arg, ArgAction};
 
@@ -24,10 +23,19 @@ fn main() {
     if let Some(input_filename) = matches.get_one::<String>("input") {
         let rdr: Box<dyn io::Read> = match input_filename.as_str() {
             "-" => Box::new(io::stdin()),
-            _ => Box::new(fs::File::open(input_filename).unwrap()),
+            _ => {
+                let opened_file = fs::File::open(input_filename);
+                match opened_file {
+                    Ok(_) => Box::new(opened_file.unwrap()),
+                    Err(_) => {
+                        cmd().print_help().expect("failed to print help");
+                        exit(1);
+                    },
+                }
+            },
         };
     } else {
-        cmd().render_help();
+        cmd().print_help().expect("failed to print help");
         exit(1)
     }
 }
